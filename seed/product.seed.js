@@ -103,11 +103,14 @@ function processDataDump() {
         }
     
         const ingredients = product['ingredients_text_en']
-    
+        
+        const price = Number((Math.random() * 5).toFixed(2))
+
         const newProduct = {
             name: product.product_name_en || "",
             brand: product.brands || "",
             image: product.image_url || "",
+            price,
             palmOil,
             vegan,
             vegetarian,

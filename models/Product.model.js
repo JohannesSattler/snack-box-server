@@ -1,11 +1,11 @@
 const { Schema, model } = require("mongoose");
-const ObjectId = Schema.Types.ObjectId;
 
 const productSchema = new Schema(
 {
     name: String,
     brand: String,
     image: String,
+    price: Number,
     palmOil: String,
     vegan: String,
     vegetarian: String,
