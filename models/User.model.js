@@ -32,7 +32,28 @@ const userSchema = new Schema(
       paypal: Boolean,
       stripe: Boolean,
     },
-    subscriptions: []
+    subscriptions: [{
+      type: Schema.Types.ObjectId,
+      ref: 'subscriptions'
+    }],
+    status: {
+      packBox: {
+        date: Date,
+        additionalInfo: String,
+        current: Boolean
+      },
+      orderOnWay: {
+        date: Date,
+        additionalInfo: String,
+        current: Boolean,
+        trackingLink: String
+      },
+      arrived: {
+        date: Date,
+        additionalInfo: String,
+        current: Boolean
+      }
+    }
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`
