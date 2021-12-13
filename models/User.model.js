@@ -29,7 +29,15 @@ const userSchema = new Schema(
       vegetarian: Boolean,
     },
     paymentInfo: {
-      paypal: Boolean,
+      paypal: {
+        country_code: String,
+        name: {
+          given_name: String,
+          surname: String,
+        },
+        email_address: String,
+        payer_id: String,
+      },
       stripe: Boolean,
     },
     subscriptions: [{

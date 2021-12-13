@@ -64,9 +64,12 @@ router.get("/user/:id/subscriptions", async (req, res, next) => {
 
         
         let total = user.subscriptions.reduce((total, subscribtion) => {
-            return total + subscribtion.products.reduce((t, p) => t + p.price, 0)
+            const productSum = subscribtion.products.reduce((t, p) => t + p.price, 0)
+            subscribtion.total = Number(productSum.toFixed(2))
+            return total + productSum
         }, 0) 
         total = Number(total.toFixed(2))
+        
 
         const response = {
             total,
