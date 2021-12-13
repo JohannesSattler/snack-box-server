@@ -11,6 +11,6 @@ const newsletterSchema = new Schema(
   }
 );
 
-const Subscription = model("Subscriptions", newsletterSchema);
+const Newsletter = model("newsletter", newsletterSchema);
 
-module.exports = Subscription;
+module.exports = Newsletter;

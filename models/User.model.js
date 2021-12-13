@@ -44,24 +44,10 @@ const userSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'subscriptions'
     }],
-    status: {
-      packBox: {
-        date: Date,
-        additionalInfo: String,
-        current: Boolean
-      },
-      orderOnWay: {
-        date: Date,
-        additionalInfo: String,
-        current: Boolean,
-        trackingLink: String
-      },
-      arrived: {
-        date: Date,
-        additionalInfo: String,
-        current: Boolean
-      }
-    }
+    orders: [{
+      type: Schema.Types.ObjectId,
+      ref: 'orders'
+    }]
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`
