@@ -3,29 +3,23 @@ const { Schema, model } = require("mongoose");
 
 const ordersSchema = new Schema(
   {
-    isActive: Boolean,
-    user: {
-        type: Schema.Types.ObjectId,
-        ref: 'user'
-    },
-    subscription: {
-        type: Schema.Types.ObjectId,
-        ref: 'subscriptions'
-    },
     status: {
         packBox: {
-          date: Date,
+          label: String,
+          date: String,
           additionalInfo: String,
           current: Boolean
         },
         orderOnWay: {
-          date: Date,
+          label: String,
+          date: String,
           additionalInfo: String,
           current: Boolean,
           trackingLink: String
         },
         arrived: {
-          date: Date,
+          label: String,
+          date: String,
           additionalInfo: String,
           current: Boolean
         }

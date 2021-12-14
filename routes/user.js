@@ -86,6 +86,7 @@ router.get("/user/:id/orders", async (req, res, next) => {
     try {
         const {id} = req.params
         const orders = await User.findById(id).populate('orders')
+        
         return res.status(201).json(orders);
     } 
     catch (error) {
@@ -95,8 +96,8 @@ router.get("/user/:id/orders", async (req, res, next) => {
 
 router.patch("/user/:id/orders/add", async (req, res, next) => {
     try {
+        console.log(req.body)
         const {id} = req.params
-        console.log(req.body.length)
         
         await req.body.forEach(async item => {
             const order = await Orders.create(item)
