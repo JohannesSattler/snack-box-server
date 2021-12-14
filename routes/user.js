@@ -82,11 +82,26 @@ router.get("/user/:id/subscriptions", async (req, res, next) => {
     }
 });
 
+router.get("/orders", async (req, res, next) => {
+    try {
+        const orders = await Orders.find()
+        return res.status(201).json(orders);
+    } 
+    catch (error) {
+        return res.status(404).json({ error: "Error in updating user" + error });
+    }
+});
+
 router.get("/user/:id/orders", async (req, res, next) => {
     try {
         const {id} = req.params
-        const orders = await User.findById(id).populate('orders')
-        
+        const orders = await User.findById(id).populate({
+            path: 'orders',
+            populate: {
+                path: 'subscription',
+                model: 'subscriptions'
+            }
+        })
         return res.status(201).json(orders);
     } 
     catch (error) {
@@ -98,13 +113,19 @@ router.patch("/user/:id/orders/add", async (req, res, next) => {
     try {
         console.log(req.body)
         const {id} = req.params
-        
-        await req.body.forEach(async item => {
-            const order = await Orders.create(item)
-            console.log(order._id)
-            await User.findByIdAndUpdate(id, {$push: {orders: new ObjectId(order._Id)}})
-        })
+        const orderIds = []
 
+        const orders = req.body
+
+        for(let i = 0; i < orders.length; i++) {
+            const order = await Orders.create(orders[i])
+            const orderid = order.id
+            console.log({orderid})
+            orderIds.push(orderid)
+        }
+
+        console.log(orderIds)
+        await User.findByIdAndUpdate(id, {$push: {orders: {$each: orderIds}}})
         const user = await User.findById(id)
         console.log(user)
         return res.status(201).json(user);
