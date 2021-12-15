@@ -1,13 +1,24 @@
 const router = require("express").Router();
 const User = require("../models/User.model");
 const Orders = require("../models/Order.model")
-const ObjectId = require('mongoose').Types.ObjectId;
 
 /* GET user by id */
 router.get("/user/:id", async (req, res, next) => {
     try {
         const {id} = req.params
         const user = await User.findById(id, req.body)
+        return res.status(201).json(user);
+    } 
+    catch (error) {
+        return res.status(404).json({ error: "Error in updating user" });
+    }
+});
+
+router.get("/user/:id/verify-email", async (req, res, next) => {
+    try {
+        const {id} = req.params
+        await User.findByIdAndUpdate(id, {isVerified: true})
+        const user = await User.findById(id)
         return res.status(201).json(user);
     } 
     catch (error) {
@@ -132,6 +143,17 @@ router.patch("/user/:id/orders/add", async (req, res, next) => {
     } 
     catch (error) {
         return res.status(404).json({ error: "Error in updating user" });
+    }
+});
+
+router.delete("/user/:id/delete", async (req, res, next) => {
+    try {
+        const {id} = req.params
+        const deletedUser = await User.findByIdAndDelete(id)
+        return res.status(201).json(deletedUser);
+    } 
+    catch (error) {
+        return res.status(404).json({ error: "Error in updating user" + error });
     }
 });
 

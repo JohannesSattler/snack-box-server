@@ -3,6 +3,7 @@ const { Schema, model } = require("mongoose");
 
 const newsletterSchema = new Schema(
   {
+    name: String,
     email: String,
   },
   {

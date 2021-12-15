@@ -1,5 +1,7 @@
 const router = require("express").Router();
 
+const {sendEmail, emailVerifivationHTML} = require('../emailSender')
+
 // ℹ️ Handles password encryption
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
@@ -14,6 +16,18 @@ const Session = require("../models/Session.model");
 // Require necessary (isLoggedOut and isLiggedIn) middleware in order to control access to specific routes
 const isLoggedOut = require("../middleware/isLoggedOut");
 const isLoggedIn = require("../middleware/isLoggedIn");
+
+
+const verificationEmail = (name, id) => {
+  const newMail = {
+    subject: 'Please Verify your Email 😇',
+    plainText: '',
+    htmlText: emailVerifivationHTML(name, process.env.ORIGIN + '/user/' + id + '/verify'),
+  }
+
+  return newMail
+}
+
 
 router.get("/session", (req, res) => {
   // we dont want to throw an error, and just maintain the user as null
@@ -35,43 +49,71 @@ router.get("/session", (req, res) => {
 });
 
 router.post("/signup", isLoggedOut, (req, res) => {
-  const { email, password, firstName, lastName } = req.body;
+  const { email, password, passwordReEnter, firstName, lastName } = req.body;
 
-  if(!firstName || !lastName) {
+  if(!firstName) {
     return res
       .status(400)
-      .json({ errorMessage: "Please provide your name." });
+      .json({ errorMessage: {type: 'firstName', message: "Please provide your first name."} });
+  }
+
+  if(!lastName) {
+    return res
+      .status(400)
+      .json({ errorMessage: {type: 'lastName', message: "Please provide your last name."} });
   }
 
   if (!email) {
     return res
       .status(400)
-      .json({ errorMessage: "Please provide your email." });
+      .json({ errorMessage: {type: 'email', message: "Please provide your email."} });
   }
 
-  if (password.length < 0) {
+  const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
+
+  if(!emailRegex.test(email)) {
     return res.status(400).json({
-      errorMessage: "Your password needs to be at least 8 characters long.",
+      errorMessage: {
+        message: "The email doesnt seem to be valid.", 
+        type: 'email'
+      }
     });
   }
 
-  //   ! This use case is using a regular expression to control for special characters and min length
-  /*
-  const regex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
+  if (password.length < 8) {
+    return res.status(400).json({
+      errorMessage: {
+        message: "Your password needs to be at least 8 characters long.", 
+        type: 'password'
+      }
+    });
+  }
 
-  if (!regex.test(password)) {
+  const passRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
+
+  if (!passRegex.test(password)) {
     return res.status(400).json( {
-      errorMessage:
-        "Password needs to have at least 8 chars and must contain at least one number, one lowercase and one uppercase letter.",
+      errorMessage: {
+        message: "Password needs to have at least 8 chars and must contain at least one number, one lowercase and one uppercase letter.", 
+        type: 'password' 
+      }
     });
   }
-  */
+  
+  if(passwordReEnter !== password) {
+    return res.status(400).json( {
+      errorMessage: {
+        message: "Seems like you have entered 2 different passwords!", 
+        type: 'passwordReEnter' 
+      }
+    });
+  }
 
   // Search the database for a user with the username submitted in the form
   User.findOne({ email }).then((found) => {
     // If the user is found, send the message username is taken
     if (found) {
-      return res.status(400).json({ errorMessage: "Email already taken." });
+      return res.status(400).json({ errorMessage: {message: "Email already taken.", type: 'email'} });
     }
 
     // if user is not found, create a new user - start with hashing the password
@@ -90,6 +132,11 @@ router.post("/signup", isLoggedOut, (req, res) => {
         });
       })
       .then((user) => {
+
+        // SEND MAIL
+        const {subject, plainText, htmlText} = verificationEmail(user.firstName, user._id)
+        sendEmail(user.email, subject, plainText, htmlText)
+
         Session.create({
           user: user._id,
           createdAt: Date.now(),
@@ -100,15 +147,17 @@ router.post("/signup", isLoggedOut, (req, res) => {
       })
       .catch((error) => {
         if (error instanceof mongoose.Error.ValidationError) {
-          return res.status(400).json({ errorMessage: error.message });
+          return res.status(400).json({ errorMessage: {message: error.message, type: 'unknown'} });
         }
         if (error.code === 11000) {
           return res.status(400).json({
-            errorMessage:
-              "Email need to be unique. The email you chose is already in use.",
+            errorMessage: {
+              message: "Email needs to be unique. The email you chose is already in use.", 
+              type: 'email'
+            }
           });
         }
-        return res.status(500).json({ errorMessage: error.message });
+        return res.status(500).json({ errorMessage: {message: error.message, type: 'unknown'} });
       });
   });
 });

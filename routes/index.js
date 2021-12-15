@@ -4,6 +4,7 @@ const productRoutes = require("./products");
 const userRoutes = require("./user");
 const subscriptionRoute = require('./subscriptions')
 const paymentsRoutes = require('./payments')
+const newsletterRoutes = require('./newsletter')
 
 /* GET home page */
 router.get("/", (req, res, next) => {
@@ -15,6 +16,7 @@ router.use("/", subscriptionRoute);
 router.use("/", productRoutes);
 router.use("/", userRoutes);
 router.use("/", paymentsRoutes);
+router.use("/", newsletterRoutes);
 
 
 module.exports = router;
