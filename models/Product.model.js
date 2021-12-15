@@ -4,6 +4,7 @@ const productSchema = new Schema(
 {
     name: String,
     brand: String,
+    describtion: String,
     image: String,
     price: Number,
     palmOil: String,
