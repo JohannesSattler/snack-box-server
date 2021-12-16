@@ -8,9 +8,9 @@ router.post("/products", async (req, res, next) => {
         console.log(req.body)
         let itemCount = 0
         if(page === 0) {
-            itemCount = Math.floor((await Product.find()).length / 20)
+            itemCount = Math.floor((await Product.find()).length / 12)
         }
-        const products = await Product.find().skip(20 * page).limit( 20 )
+        const products = await Product.find().skip(12 * page).limit( 12 )
         return res.status(200).json({products, itemCount});
     } 
     catch (error) {

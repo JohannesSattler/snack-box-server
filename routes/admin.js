@@ -42,7 +42,7 @@ router.post("/admin/login", (req, res, next) => {
 router.get("/admin/products", async(req, res, next) => {
     try {
         console.log("dassda")
-        const product = await Product.find().limit(30)
+        const product = await Product.find()
         console.log(product)
         return res.status(200).json(product);
     }
