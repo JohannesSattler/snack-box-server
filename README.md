@@ -141,6 +141,10 @@ We will search for the best snack fit, after you have answered some basic questi
   - **id:** ObjectId
   - **email:** String
 
+## Links to deploy and slides
+
+ - [deploy](https://snack-boxx.herokuapp.com/)
+ - [slides](https://docs.google.com/presentation/d/19Pj3C11SkrMn3z4FCctoGsQXUZ4NY_I8J17HCNE3lz0/edit?usp=sharing)
 
 ## API & DATASETS
 
